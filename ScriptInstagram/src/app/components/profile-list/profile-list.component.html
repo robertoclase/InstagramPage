@@ -1,0 +1,27 @@
+<div class="profile-list card border-0 h-100" [ngClass]="accent">
+  <div class="card-body p-4">
+    <div class="d-flex align-items-start justify-content-between gap-3 mb-4 flex-wrap">
+      <div>
+        <p class="eyebrow text-uppercase mb-1">{{ title }}</p>
+        <p class="text-muted small mb-0" *ngIf="caption">{{ caption }}</p>
+      </div>
+      <span class="count-pill badge rounded-pill">{{ profiles.length }} perfiles</span>
+    </div>
+    <div class="list-wrapper">
+      <ul *ngIf="profiles.length; else emptyState" class="list-group list-group-flush">
+        <li class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center flex-wrap gap-3" *ngFor="let profile of profiles">
+          <div>
+            <a [href]="profile.url" target="_blank" rel="noopener" class="profile-link">{{ profile.username }}</a>
+            <p *ngIf="formatTimestamp(profile.timestamp) as stamp" class="timestamp mb-0">desde {{ stamp }}</p>
+          </div>
+          <a [href]="profile.url" target="_blank" rel="noopener" class="btn btn-sm btn-outline-light px-3">Abrir perfil</a>
+        </li>
+      </ul>
+      <ng-template #emptyState>
+        <div class="empty-state text-center py-5">
+          <p class="mb-0">{{ emptyMessage }}</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

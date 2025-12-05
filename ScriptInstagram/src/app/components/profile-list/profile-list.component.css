@@ -1,0 +1,71 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.profile-list {
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 20px 55px rgba(231, 123, 123, 0.25);
+}
+
+.profile-list.rose {
+  border: 1px solid rgba(237, 91, 121, 0.3);
+}
+
+.profile-list.salmon {
+  border: 1px solid rgba(255, 163, 135, 0.3);
+}
+
+.profile-list.neutral {
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.eyebrow {
+  letter-spacing: 0.2em;
+  font-size: 0.7rem;
+  color: var(--rose-400);
+  font-weight: 600;
+}
+
+.count-pill {
+  background: rgba(255, 255, 255, 0.4);
+  color: var(--text-contrast);
+  padding: 0.4rem 0.9rem;
+  font-weight: 600;
+}
+
+.list-group-item {
+  background: transparent;
+  border-color: rgba(151, 114, 129, 0.2);
+}
+
+.profile-link {
+  font-weight: 600;
+  color: var(--text-contrast);
+  text-decoration: none;
+}
+
+.profile-link:hover {
+  text-decoration: underline;
+}
+
+.timestamp {
+  color: rgba(77, 61, 71, 0.85);
+  font-size: 0.85rem;
+}
+
+.empty-state {
+  color: rgba(77, 61, 71, 0.65);
+}
+
+.btn-outline-light {
+  border-color: rgba(255, 255, 255, 0.6);
+  color: var(--text-contrast);
+}
+
+.btn-outline-light:hover {
+  background: linear-gradient(135deg, var(--rose-500), var(--apricot-500));
+  color: #fff;
+  border-color: transparent;
+}

@@ -1,0 +1,33 @@
+<div
+  class="file-drop card shadow-sm border-0"
+  role="button"
+  tabindex="0"
+  [class.drag-over]="isOver()"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+  (click)="openFileExplorer()"
+  (keyup.enter)="openFileExplorer()"
+  (keyup.space)="openFileExplorer()"
+>
+  <div class="card-body text-center py-5">
+    <div class="icon-wrap mx-auto mb-3">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path
+          d="M12 16v-8m0 0 3 3m-3-3-3 3M8 20H6a2 2 0 0 1-2-2V9c0-.53.211-1.039.586-1.414l4-4A2 2 0 0 1 9.999 3H16a2 2 0 0 1 2 2v3"
+        ></path>
+        <path d="M16 16h6m0 0-2 2m2-2-2-2" />
+      </svg>
+    </div>
+    <p class="eyebrow text-uppercase mb-1">{{ label }}</p>
+    <p class="lead mb-3">{{ description }}</p>
+    <div class="d-flex flex-wrap justify-content-center gap-3 align-items-center">
+      <button class="btn btn-light px-4" type="button" (click)="openFileExplorer()">Elegir archivo</button>
+      <span class="text-muted small">o arrástralo dentro</span>
+    </div>
+    <p *ngIf="fileName" class="mt-4 mb-0">
+      <span class="badge text-bg-light text-dark px-3 py-2">Actual: {{ fileName }}</span>
+    </p>
+    <input #fileInput type="file" class="d-none" [accept]="accept" (change)="onFileChange($event)" />
+  </div>
+</div>

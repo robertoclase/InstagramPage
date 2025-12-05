@@ -1,0 +1,137 @@
+<section class="hero container py-5">
+  <div class="row align-items-center g-5">
+    <div class="col-lg-7">
+      <p class="hero-chip text-uppercase mb-3">Analizador personal de Instagram</p>
+      <h1 class="display-5 fw-bold mb-4">Descubre a tus fans y detecta a los perros</h1>
+      <p class="lead text-muted mb-4">
+        Sube los archivos JSON que Instagram entrega al exportar tus datos. Nosotros calculamos cuántas personas te siguen,
+        cuántas sigues y mostramos quiénes son fans (te siguen, pero no los sigues) y quiénes son perros (tú los sigues, pero no te siguen).
+      </p>
+      <ul class="hero-list list-unstyled d-grid gap-3">
+        <li class="d-flex gap-3">
+          <span class="hero-bullet">1</span>
+          <div>
+            <p class="fw-semibold mb-1">Exporta tus datos de Instagram</p>
+            <p class="mb-0 text-muted">Elige formato JSON y descarga los archivos de seguidores y seguidos.</p>
+          </div>
+        </li>
+        <li class="d-flex gap-3">
+          <span class="hero-bullet">2</span>
+          <div>
+            <p class="fw-semibold mb-1">Arrastra o selecciona los archivos</p>
+            <p class="mb-0 text-muted">Aceptamos drag & drop o clic para abrir el explorador de archivos.</p>
+          </div>
+        </li>
+        <li class="d-flex gap-3">
+          <span class="hero-bullet">3</span>
+          <div>
+            <p class="fw-semibold mb-1">Analiza tus relaciones</p>
+            <p class="mb-0 text-muted">Verás métricas limpias y listas accionables en cuestión de segundos.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="col-lg-5">
+      <div class="hero-card p-4">
+        <p class="text-uppercase small fw-semibold text-muted mb-2">Estado rápido</p>
+        <div class="d-flex flex-column gap-3">
+          <div class="status-row d-flex justify-content-between align-items-center">
+            <span>Seguidores</span>
+            <span class="fw-bold">{{ followers().length }}</span>
+          </div>
+          <div class="status-row d-flex justify-content-between align-items-center">
+            <span>Seguidos</span>
+            <span class="fw-bold">{{ following().length }}</span>
+          </div>
+          <div class="status-row d-flex justify-content-between align-items-center">
+            <span>Listo para comparar</span>
+            <span class="badge" [class.text-bg-success]="readyForComparison" [class.text-bg-secondary]="!readyForComparison">
+              {{ readyForComparison ? 'Sí' : 'Pendiente' }}
+            </span>
+          </div>
+        </div>
+        <p class="small text-muted mt-4 mb-0">Tus archivos se procesan completamente en tu navegador.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="upload container pb-5">
+  <div class="row g-4">
+    <div class="col-md-6">
+      <app-file-drop
+        label="Seguidores"
+        description="Arrastra aquí followers_1.json"
+        [fileName]="followersFileName()"
+        (filePicked)="handleFollowersFile($event)"
+      ></app-file-drop>
+      <div class="text-center mt-3" *ngIf="loading() === 'followers'">
+        <div class="spinner-border text-danger" role="status">
+          <span class="visually-hidden">Cargando seguidores</span>
+        </div>
+        <p class="small text-muted mt-2 mb-0">Leyendo archivo de seguidores...</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <app-file-drop
+        label="Seguidos"
+        description="Arrastra aquí following.json"
+        [fileName]="followingFileName()"
+        (filePicked)="handleFollowingFile($event)"
+      ></app-file-drop>
+      <div class="text-center mt-3" *ngIf="loading() === 'following'">
+        <div class="spinner-border text-danger" role="status">
+          <span class="visually-hidden">Cargando seguidos</span>
+        </div>
+        <p class="small text-muted mt-2 mb-0">Leyendo archivo de seguidos...</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-danger mt-4" role="alert" *ngIf="lastError() as errorMessage">
+    {{ errorMessage }}
+  </div>
+</section>
+
+<section class="stats container pb-5" *ngIf="comparison() as result">
+  <div class="row g-4">
+    <div class="col-md-4">
+      <app-stat-card label="Seguidores" [value]="result.followers.length" hint="Datos únicos" variant="rose"></app-stat-card>
+    </div>
+    <div class="col-md-4">
+      <app-stat-card label="Seguidos" [value]="result.following.length" hint="Desde tu archivo" variant="salmon"></app-stat-card>
+    </div>
+    <div class="col-md-4">
+      <app-stat-card label="Mutuos" [value]="result.mutuals" hint="Personas con follow recíproco"></app-stat-card>
+    </div>
+    <div class="col-md-6">
+      <app-stat-card label="Fans" [value]="result.fans.length" hint="Te siguen, tú no" variant="rose"></app-stat-card>
+    </div>
+    <div class="col-md-6">
+      <app-stat-card label="Perros" [value]="result.perros.length" hint="Tú los sigues, no devuelven" variant="salmon"></app-stat-card>
+    </div>
+  </div>
+</section>
+
+<section class="lists container pb-5" *ngIf="comparison() as result">
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <app-profile-list
+        title="Fans"
+        caption="Te siguen, pero no los sigues"
+        [profiles]="result.fans"
+        accent="rose"
+        emptyMessage="No hay fans pendientes."
+      ></app-profile-list>
+    </div>
+    <div class="col-lg-6">
+      <app-profile-list
+        title="Perros"
+        caption="Los sigues, pero no te siguen"
+        [profiles]="result.perros"
+        accent="salmon"
+        emptyMessage="No hay perros activos."
+      ></app-profile-list>
+    </div>
+  </div>
+</section>

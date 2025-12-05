@@ -1,0 +1,5 @@
+<div class="stat-card" [ngClass]="variant">
+  <p class="eyebrow text-uppercase mb-2">{{ label }}</p>
+  <p class="display-value mb-1">{{ value | number: '1.0-0' }}</p>
+  <p class="hint mb-0" *ngIf="hint">{{ hint }}</p>
+</div>
