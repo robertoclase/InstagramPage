@@ -1,6 +1,6 @@
 export interface StringListEntry {
-  href: string;
-  value: string;
+  href?: string;
+  value?: string;
   timestamp?: number;
 }
 

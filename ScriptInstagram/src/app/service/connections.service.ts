@@ -99,12 +99,60 @@ export class ConnectionsService {
     const entries: StringListEntry[] = bucket?.string_list_data ?? [];
 
     return entries
-      .filter((entry): entry is StringListEntry => Boolean(entry?.value))
-      .map((entry) => ({
-        username: entry.value.trim(),
-        url: entry.href ?? `https://www.instagram.com/${entry.value.trim()}`,
-        timestamp: entry.timestamp
-      }));
+      .map((entry) => this.buildProfileHandle(entry, bucket))
+      .filter((handle): handle is ProfileHandle => Boolean(handle));
+  }
+
+  private buildProfileHandle(entry: StringListEntry, bucket: RawProfileBucket): ProfileHandle | null {
+    const username = this.resolveUsername(entry, bucket);
+    if (!username) {
+      return null;
+    }
+
+    return {
+      username,
+      url: this.resolveProfileUrl(entry, username),
+      timestamp: entry.timestamp
+    };
+  }
+
+  private resolveUsername(entry: StringListEntry, bucket: RawProfileBucket): string | null {
+    const entryValue = entry?.value;
+    if (typeof entryValue === 'string') {
+      const normalized = entryValue.trim();
+      if (normalized) {
+        return normalized;
+      }
+    }
+
+    const fromTitle = bucket?.title?.trim();
+    if (fromTitle) {
+      return fromTitle;
+    }
+
+    return this.extractUsernameFromHref(entry?.href);
+  }
+
+  private resolveProfileUrl(entry: StringListEntry, username: string): string {
+    const href = entry?.href?.trim();
+    if (href) {
+      if (href.includes('/_u/')) {
+        return `https://www.instagram.com/${username}`;
+      }
+
+      return href.startsWith('http') ? href : `https://www.instagram.com/${href.replace(/^\/+/g, '')}`;
+    }
+
+    return `https://www.instagram.com/${username}`;
+  }
+
+  private extractUsernameFromHref(href?: string): string | null {
+    if (!href) {
+      return null;
+    }
+
+    const match = href.trim().match(/instagram\.com\/(?:_u\/)?([^/?#]+)/i);
+    return match?.[1] ?? null;
   }
 
   private uniqueByUsername(profiles: ProfileHandle[]): ProfileHandle[] {

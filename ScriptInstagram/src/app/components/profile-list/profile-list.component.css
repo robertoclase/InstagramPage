@@ -69,3 +69,31 @@
   color: #fff;
   border-color: transparent;
 }
+
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1.25rem;
+  margin-top: 1rem;
+  border-top: 1px dashed rgba(151, 114, 129, 0.35);
+  flex-wrap: wrap;
+}
+
+.pagination-controls .btn {
+  border-radius: 999px;
+  padding-inline: 1.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(151, 114, 129, 0.2);
+  color: var(--text-contrast);
+}
+
+.pagination-controls .btn:disabled {
+  opacity: 0.45;
+}
+
+.page-indicator {
+  font-weight: 600;
+  color: rgba(77, 61, 71, 0.85);
+}
