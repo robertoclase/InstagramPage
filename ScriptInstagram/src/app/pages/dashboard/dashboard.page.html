@@ -4,7 +4,7 @@
       <p class="hero-chip text-uppercase mb-3">Analizador personal de Instagram</p>
       <h1 class="display-5 fw-bold mb-4">Descubre a tus fans y detecta a los perros</h1>
       <p class="lead text-muted mb-4">
-        Sube los archivos JSON que Instagram entrega al exportar tus datos. Nosotros calculamos cuántas personas te siguen,
+        Sube el archivo ZIP que Instagram entrega al exportar tus conexiones. Nosotros calculamos cuántas personas te siguen,
         cuántas sigues y mostramos quiénes son fans (te siguen, pero no los sigues) y quiénes son perros (tú los sigues, pero no te siguen).
       </p>
       <ul class="hero-list list-unstyled d-grid gap-3">
@@ -18,8 +18,8 @@
         <li class="d-flex gap-3">
           <span class="hero-bullet">2</span>
           <div>
-            <p class="fw-semibold mb-1">Arrastra o selecciona los archivos</p>
-            <p class="mb-0 text-muted">Aceptamos drag & drop o clic para abrir el explorador de archivos.</p>
+            <p class="fw-semibold mb-1">Arrastra el ZIP</p>
+            <p class="mb-0 text-muted">Solo necesitas followers_and_following.zip; nosotros buscamos los JSON internos.</p>
           </div>
         </li>
         <li class="d-flex gap-3">
@@ -57,34 +57,22 @@
 </section>
 
 <section class="upload container pb-5">
-  <div class="row g-4">
-    <div class="col-md-6">
+  <div class="row g-4 justify-content-center">
+    <div class="col-lg-8">
       <app-file-drop
-        label="Seguidores"
-        description="Arrastra aquí followers_1.json"
-        [fileName]="followersFileName()"
-        (filePicked)="handleFollowersFile($event)"
+        label="Archivo ZIP combinado"
+        description="Arrastra followers_and_following.zip y detectamos ambos archivos"
+        accept=".zip"
+        [fileName]="archiveFileName()"
+        (filePicked)="handleArchiveFile($event)"
       ></app-file-drop>
-      <div class="text-center mt-3" *ngIf="loading() === 'followers'">
+      <div class="text-center mt-3" *ngIf="loading() === 'archive'">
         <div class="spinner-border text-danger" role="status">
-          <span class="visually-hidden">Cargando seguidores</span>
+          <span class="visually-hidden">Cargando ZIP</span>
         </div>
-        <p class="small text-muted mt-2 mb-0">Leyendo archivo de seguidores...</p>
+        <p class="small text-muted mt-2 mb-0">Leyendo followers_1.json y following.json desde el ZIP...</p>
       </div>
-    </div>
-    <div class="col-md-6">
-      <app-file-drop
-        label="Seguidos"
-        description="Arrastra aquí following.json"
-        [fileName]="followingFileName()"
-        (filePicked)="handleFollowingFile($event)"
-      ></app-file-drop>
-      <div class="text-center mt-3" *ngIf="loading() === 'following'">
-        <div class="spinner-border text-danger" role="status">
-          <span class="visually-hidden">Cargando seguidos</span>
-        </div>
-        <p class="small text-muted mt-2 mb-0">Leyendo archivo de seguidos...</p>
-      </div>
+      <p class="small text-muted text-center mt-2 mb-0">Procesamos el ZIP en el navegador; nada se sube a servidores.</p>
     </div>
   </div>
 

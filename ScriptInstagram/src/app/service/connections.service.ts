@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import JSZip, { JSZipObject } from 'jszip';
 import {
   ComparisonResult,
   ProfileHandle,
@@ -10,6 +11,31 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class ConnectionsService {
+  async extractProfilesFromArchive(arrayBuffer: ArrayBuffer): Promise<{ followers: ProfileHandle[]; following: ProfileHandle[] }> {
+    const zip = await JSZip.loadAsync(arrayBuffer);
+
+    const followersEntry = this.findZipEntry(zip, ['followers_1.json', 'followers.json']);
+    const followingEntry = this.findZipEntry(zip, ['following.json', 'following_1.json']);
+
+    if (!followersEntry) {
+      throw new Error('No se encontró followers_1.json dentro del ZIP.');
+    }
+
+    if (!followingEntry) {
+      throw new Error('No se encontró following.json dentro del ZIP.');
+    }
+
+    const [followersRaw, followingRaw] = await Promise.all([
+      followersEntry.async('string'),
+      followingEntry.async('string')
+    ]);
+
+    return {
+      followers: this.parseFollowersJson(followersRaw),
+      following: this.parseFollowingJson(followingRaw)
+    };
+  }
+
   parseFollowersJson(rawText: string): ProfileHandle[] {
     const parsed = this.safeJsonParse(rawText);
 
@@ -84,6 +110,19 @@ export class ConnectionsService {
   private uniqueByUsername(profiles: ProfileHandle[]): ProfileHandle[] {
     const map = this.mapByUsername(profiles);
     return Array.from(map.values());
+  }
+
+  private findZipEntry(zip: JSZip, candidateNames: string[]): JSZipObject | undefined {
+    const normalizedCandidates = candidateNames.map((name) => name.toLowerCase());
+
+    return Object.values(zip.files).find((entry) => {
+      if (entry.dir) {
+        return false;
+      }
+
+      const normalized = entry.name.replace(/\\/g, '/').toLowerCase();
+      return normalizedCandidates.some((candidate) => normalized.endsWith(candidate));
+    });
   }
 
   private mapByUsername(profiles: ProfileHandle[]): Map<string, ProfileHandle> {

@@ -14,52 +14,39 @@ import { ConnectionsService } from '../../service/connections.service';
   styleUrl: './dashboard.page.css'
 })
 export class DashboardPage {
-  protected readonly followersFileName = signal<string | null>(null);
-  protected readonly followingFileName = signal<string | null>(null);
+  protected readonly archiveFileName = signal<string | null>(null);
   protected readonly followers = signal<ProfileHandle[]>([]);
   protected readonly following = signal<ProfileHandle[]>([]);
   protected readonly comparison = signal<ComparisonResult | null>(null);
   protected readonly lastError = signal<string | null>(null);
-  protected readonly loading = signal<'followers' | 'following' | null>(null);
+  protected readonly loading = signal<'archive' | null>(null);
 
   constructor(private readonly connections: ConnectionsService) {}
 
-  handleFollowersFile(file: File): void {
-    this.ingestFile(file, 'followers');
-  }
+  handleArchiveFile(file: File): void {
+    if (!file.name.toLowerCase().endsWith('.zip')) {
+      this.lastError.set('El archivo comprimido debe ser .zip.');
+      return;
+    }
 
-  handleFollowingFile(file: File): void {
-    this.ingestFile(file, 'following');
-  }
-
-  protected get readyForComparison(): boolean {
-    return Boolean(this.followers().length && this.following().length);
-  }
-
-  private ingestFile(file: File, kind: 'followers' | 'following'): void {
     this.lastError.set(null);
-    this.loading.set(kind);
+    this.loading.set('archive');
 
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       try {
-        const text = (reader.result as string) ?? '';
-        const payload =
-          kind === 'followers'
-            ? this.connections.parseFollowersJson(text)
-            : this.connections.parseFollowingJson(text);
-
-        if (kind === 'followers') {
-          this.followers.set(payload);
-          this.followersFileName.set(file.name);
-        } else {
-          this.following.set(payload);
-          this.followingFileName.set(file.name);
+        const result = reader.result;
+        if (!(result instanceof ArrayBuffer)) {
+          throw new Error('No se pudo leer el archivo ZIP.');
         }
 
+        const { followers, following } = await this.connections.extractProfilesFromArchive(result);
+        this.followers.set(followers);
+        this.following.set(following);
+        this.archiveFileName.set(file.name);
         this.refreshComparison();
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'No se pudo procesar el archivo.';
+        const message = error instanceof Error ? error.message : 'No se pudo procesar el archivo ZIP.';
         this.lastError.set(message);
         this.comparison.set(null);
       } finally {
@@ -68,11 +55,15 @@ export class DashboardPage {
     };
 
     reader.onerror = () => {
-      this.lastError.set('Hubo un problema al leer el archivo.');
+      this.lastError.set('Hubo un problema al leer el archivo ZIP.');
       this.loading.set(null);
     };
 
-    reader.readAsText(file);
+    reader.readAsArrayBuffer(file);
+  }
+
+  protected get readyForComparison(): boolean {
+    return Boolean(this.followers().length && this.following().length);
   }
 
   private refreshComparison(): void {
