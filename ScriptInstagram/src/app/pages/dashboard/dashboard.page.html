@@ -50,7 +50,6 @@
             </span>
           </div>
         </div>
-        <p class="small text-muted mt-4 mb-0">Tus archivos se procesan completamente en tu navegador.</p>
       </div>
     </div>
   </div>
@@ -61,7 +60,6 @@
     <div class="col-lg-8">
       <app-file-drop
         label="Archivo ZIP combinado"
-        description="Arrastra followers_and_following.zip y detectamos ambos archivos"
         accept=".zip"
         [fileName]="archiveFileName()"
         (filePicked)="handleArchiveFile($event)"

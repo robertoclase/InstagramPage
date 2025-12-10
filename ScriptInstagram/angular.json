@@ -57,7 +57,7 @@
             },
             "development": {
               "buildTarget": "ScriptInstagram:build:development",
-              "allowedHosts": ["2a68fc9efa6f.ngrok-free.app"]
+              "allowedHosts": [".ngrok-free.app"]
             }
           },
           "defaultConfiguration": "development"
